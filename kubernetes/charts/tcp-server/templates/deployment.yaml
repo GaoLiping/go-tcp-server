@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: tcp-server
+  labels:
+    appType: tradeshift-component
+  annotations:
+    team: dev-prod
+    repository: git@github.com:GaoLiping/go-tcp-server.git
+spec:
+  replicas: {{ .Values.replicaCount }} # tells deployment to run 1 pods matching the template
+  strategy:
+    rollingUpdate:
+      maxSurge: 10%
+      maxUnavailable: 0
+  template: # create pods using pod definition in this template
+    metadata:
+      # Assign some metadata to the pod, so we can find it later
+      labels:
+        app: tcp-server
+    spec:
+      # define the containers we wanna run in the pod, please note we can have multiple
+      containers:
+      - name: tcp-server
+        image: lipinggao/tcp-server:v1
+        ports:
+          # expose port 8080 from this app
+        - containerPort: 3333
+        readinessProbe:
+          tcpSocket:
+            port: 3333
+          initialDelaySeconds: 10
+        livenessnessProbe:
+          tcpSocket:
+            port: 3333
+          initialDelaySeconds: 10
+        resources:
+          limits:
+            cpu: 0.2
+            memory: 100Mi
+          requests:
+            cpu: 0.2
+            memory: 100Mi

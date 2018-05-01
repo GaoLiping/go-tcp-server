@@ -1,0 +1,4 @@
+apiVersion: v1
+description: A TCP server implmented with go
+name: tcp-server
+version: 0.1.0
